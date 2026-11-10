@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+"""Starts Fleece from a source folder or from /usr/share/fleece."""
+import os
+import sys
+
+here = os.path.dirname(os.path.realpath(__file__))
+for base in (here, os.path.dirname(here), '/usr/share/fleece'):
+    if os.path.isfile(os.path.join(base, 'fleece', '__init__.py')):
+        sys.path.insert(0, base)
+        break
+
+from fleece.app import main  # noqa: E402
+
+sys.exit(main(sys.argv))

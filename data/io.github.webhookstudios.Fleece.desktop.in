@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Fleece
+GenericName=Local AI Chat
+Comment=Chat with the AI models on your computer, using Ollama
+Exec=@EXEC@
+Icon=@ICON@
+Terminal=false
+StartupWMClass=io.github.webhookstudios.Fleece
+Categories=Utility;Network;GTK;
+Keywords=ollama;ai;chat;llm;llama;assistant;local;

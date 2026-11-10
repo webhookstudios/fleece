@@ -6,6 +6,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gtk, Pango
 
 from . import APP_ID
 from .ollama import Client, OllamaError
+from . import render as render_module
 from .render import render
 from .store import new_chat
 
@@ -129,11 +130,12 @@ class AssistantMessage(Gtk.Box):
 
 class FleeceWindow(Adw.ApplicationWindow):
     def __init__(self, app, config, store, first_prompt=None, open_settings=False, open_models=False):
-        super().__init__(application=app, title='Fleece', default_width=1120, default_height=780)
+        super().__init__(application=app, title='Fleece', default_width=1320, default_height=840)
         self.config = config
         self.store = store
         self.client = Client(config['host'])
         self.models = []
+        self.model_details = {}
         self.caps = {}
         self.chat = None
         self.streaming = False
@@ -144,6 +146,8 @@ class FleeceWindow(Adw.ApplicationWindow):
         self._populating = False
         self._first_prompt = first_prompt
 
+        self._mode_groups = []
+        self.code = None
         self._build()
         self._actions()
         self.reload_list()
@@ -153,14 +157,20 @@ class FleeceWindow(Adw.ApplicationWindow):
             GLib.idle_add(lambda: self.show_settings() or False)
         if open_models:
             GLib.idle_add(lambda: self.show_models() or False)
+        if self.config['mode'] == 'code':
+            GLib.idle_add(lambda: self.set_mode('code') or False)
 
     # ---- layout ---------------------------------------------------------
 
     def _build(self):
         self.toasts = Adw.ToastOverlay()
         self.split = Adw.OverlaySplitView(min_sidebar_width=250, max_sidebar_width=330, sidebar_width_fraction=0.24)
-        self.toasts.set_child(self.split)
+        self.modes = Gtk.Stack(transition_type=Gtk.StackTransitionType.CROSSFADE, transition_duration=150)
+        self.modes.add_named(self.split, 'chat')
+        self.toasts.set_child(self.modes)
         self.set_content(self.toasts)
+        render_module.open_in_code = self.open_in_code
+        self.connect('close-request', self._on_close_request)
 
         bp = Adw.Breakpoint.new(Adw.BreakpointCondition.parse('max-width: 760sp'))
         bp.add_setter(self.split, 'collapsed', True)
@@ -216,7 +226,7 @@ class FleeceWindow(Adw.ApplicationWindow):
                                  GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE)
         header.pack_start(toggle)
         self.title_widget = Adw.WindowTitle(title='Fleece', subtitle='')
-        header.set_title_widget(self.title_widget)
+        header.set_title_widget(self.mode_switch())
         menu = Gio.Menu()
         menu.append('New chat', 'win.new-chat')
         menu.append('Get models…', 'win.models')
@@ -332,7 +342,7 @@ class FleeceWindow(Adw.ApplicationWindow):
         holder.append(self.composer)
 
     def _actions(self):
-        for name, cb in (('new-chat', lambda *_: self.new_chat()),
+        for name, cb in (('new-chat', lambda *_: self.code.new_file() if self._mode() == 'code' else self.new_chat()),
                          ('models', lambda *_: self.show_models()),
                          ('settings', lambda *_: self.show_settings())):
             action = Gio.SimpleAction.new(name, None)
@@ -412,6 +422,7 @@ class FleeceWindow(Adw.ApplicationWindow):
 
     def _models_loaded(self, models, error):
         self.models = [m['name'] for m in models]
+        self.model_details = {m['name']: m.get('details') or {} for m in models}
         self.banner.set_revealed(error is not None or not self.models)
         if error:
             self._banner_mode = 'retry'
@@ -422,6 +433,8 @@ class FleeceWindow(Adw.ApplicationWindow):
             self.banner.set_title('You have no models yet. Download one to start chatting.')
             self.banner.set_button_label('Get a model')
         self._populate_models()
+        if self.code:
+            self.code.set_models(self.models)
         if self._first_prompt and self.models:
             text, self._first_prompt = self._first_prompt, None
             self._send_text(text)
@@ -691,6 +704,68 @@ class FleeceWindow(Adw.ApplicationWindow):
         adj.set_value(adj.get_upper() - adj.get_page_size())
         return GLib.SOURCE_REMOVE
 
+    # ---- modes ----------------------------------------------------------
+
+    def mode_switch(self):
+        group = Adw.ToggleGroup()
+        group.add_css_class('mode-switch')
+        group.add(Adw.Toggle(name='chat', label='Chat', tooltip='Chat with a model'))
+        group.add(Adw.Toggle(name='code', label='Code', tooltip='Edit and run code with the assistant beside you'))
+        group.set_active_name(self.config['mode'] if self.config['mode'] in ('chat', 'code') else 'chat')
+        group.connect('notify::active-name', lambda g, _p: self.set_mode(g.get_active_name()))
+        self._mode_groups.append(group)
+        return group
+
+    def _mode(self):
+        return self.modes.get_visible_child_name()
+
+    def set_mode(self, mode):
+        if mode not in ('chat', 'code'):
+            return
+        for group in self._mode_groups:
+            if group.get_active_name() != mode:
+                group.set_active_name(mode)
+        if mode == 'code' and not self.modes.get_child_by_name('code'):
+            self.modes.add_named(self._build_code(), 'code')
+        self.modes.set_visible_child_name(mode)
+        self.config['mode'] = mode
+
+    def _build_code(self):
+        try:
+            from .workspace import CodeWorkspace
+            self.code = CodeWorkspace(self, self.mode_switch())
+            self.code.set_models(self.models)
+            return self.code
+        except (ImportError, ValueError) as exc:
+            view = Adw.ToolbarView()
+            header = Adw.HeaderBar()
+            header.set_title_widget(self.mode_switch())
+            view.add_top_bar(header)
+            view.set_content(Adw.StatusPage(
+                icon_name='dialog-warning-symbolic', title='Code mode needs a few more parts',
+                description='Install them with:\n\nsudo apt install gir1.2-gtksource-5 gir1.2-vte-3.91 '
+                            'gir1.2-webkit-6.0\n\nthen open Fleece again.\n\n(' + str(exc) + ')'))
+            return view
+
+    def open_in_code(self, code, lang):
+        self.set_mode('code')
+        if self.code:
+            self.code.open_snippet(code, lang)
+
+    def _on_close_request(self, _win):
+        if self.code and self.code.unsaved():
+            def close():
+                for tab in self.code.tabs():
+                    tab.buffer.set_modified(False)
+                self.code.shutdown()
+                self.destroy()
+
+            self.code._confirm_unsaved(close)
+            return True
+        if self.code:
+            self.code.shutdown()
+        return False
+
     # ---- misc -----------------------------------------------------------
 
     def toast(self, text):
@@ -702,9 +777,9 @@ class FleeceWindow(Adw.ApplicationWindow):
         else:
             self.refresh_models()
 
-    def show_models(self):
+    def show_models(self, coding=False):
         from .models import show_model_manager
-        show_model_manager(self)
+        show_model_manager(self, coding)
 
     def show_settings(self):
         from .prefs import show_preferences

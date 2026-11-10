@@ -21,6 +21,9 @@ _PALETTE = {
 
 esc = GLib.markup_escape_text
 
+# Set by the window: called with (code, language) to open a code block in Code mode.
+open_in_code = None
+
 
 def _inline_markup(token):
     out = []
@@ -123,6 +126,12 @@ def _code_block(code, lang):
         GLib.timeout_add(1200, lambda: copy.set_icon_name('edit-copy-symbolic') or False)
 
     copy.connect('clicked', on_copy)
+    if open_in_code:
+        edit = Gtk.Button(icon_name='document-edit-symbolic', tooltip_text='Open in Code mode')
+        edit.add_css_class('flat')
+        edit.add_css_class('circular')
+        edit.connect('clicked', lambda *_: open_in_code(code, lang))
+        head.append(edit)
     head.append(copy)
     box.append(head)
 

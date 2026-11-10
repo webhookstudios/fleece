@@ -12,7 +12,8 @@ RECOMMENDED = [
     ('phi4-mini', "Microsoft's compact model. Strong at reasoning for its size.", '2.5 GB'),
     ('qwen3:8b', 'Thinks before it answers. Strong at maths, code and planning.', '5.2 GB'),
     ('llama3.1:8b', 'A larger, more capable general model. Wants about 8 GB of RAM.', '4.9 GB'),
-    ('qwen2.5-coder:7b', 'Tuned for writing and explaining code.', '4.7 GB'),
+    ('qwen2.5-coder:7b', 'Tuned for writing and explaining code. The best choice for Code mode.', '4.7 GB'),
+    ('qwen2.5-coder:3b', 'A small coding model. Quick, and good at following edit instructions.', '1.9 GB'),
     ('deepseek-r1:8b', 'Shows its reasoning step by step on harder problems.', '5.2 GB'),
     ('mistral', 'Fast and capable. A long-time favorite.', '4.1 GB'),
 ]
@@ -30,8 +31,11 @@ def _base(name):
     return name[:-7] if name.endswith(':latest') else name
 
 
+CODING = ('qwen2.5-coder:7b', 'qwen2.5-coder:3b')
+
+
 class ModelManager:
-    def __init__(self, win):
+    def __init__(self, win, coding=False):
         self.win = win
         self.config = win.config
         self.downloads = {}  # name -> row
@@ -51,7 +55,10 @@ class ModelManager:
                         'Bigger models answer better but need more memory.')
         self.page.add(intro)
 
-        self.rec_group = Adw.PreferencesGroup(title='Recommended')
+        self.rec_group = Adw.PreferencesGroup(
+            title='Recommended for Code mode' if coding else 'Recommended',
+            description='Coding models are listed first. They read and change code far more reliably.'
+            if coding else None)
         self.page.add(self.rec_group)
 
         custom = Adw.PreferencesGroup(
@@ -65,7 +72,8 @@ class ModelManager:
         self.page.add(self.inst_group)
 
         self.rec_rows = {}
-        for name, blurb, size in RECOMMENDED:
+        order = sorted(RECOMMENDED, key=lambda r: r[0] not in CODING) if coding else RECOMMENDED
+        for name, blurb, size in order:
             row = Adw.ActionRow(title=GLib.markup_escape_text(name), subtitle=f'{blurb} · {size}')
             row.set_subtitle_lines(2)
             button = Gtk.Button(label='Download', valign=Gtk.Align.CENTER)
@@ -223,5 +231,5 @@ class ModelManager:
         self.dialog.present(self.win)
 
 
-def show_model_manager(win):
-    ModelManager(win).present()
+def show_model_manager(win, coding=False):
+    ModelManager(win, coding).present()

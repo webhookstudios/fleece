@@ -26,3 +26,12 @@ sed -e "s|@EXEC@|$DEST/fleece-launcher|" -e "s|@ICON@|$DATA/icons/hicolor/scalab
 update-desktop-database "$DATA/applications" 2>/dev/null || true
 
 echo "Fleece is installed. Open it from the apps menu, or run: fleece"
+
+python3 - <<'PY' 2>/dev/null || echo "
+Code mode needs three more packages. Install them with:
+  sudo apt install gir1.2-gtksource-5 gir1.2-vte-3.91 gir1.2-webkit-6.0"
+import gi
+gi.require_version('GtkSource', '5')
+gi.require_version('Vte', '3.91')
+from gi.repository import GtkSource, Vte
+PY

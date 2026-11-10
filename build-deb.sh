@@ -44,8 +44,8 @@ Version: $VERSION
 Architecture: all
 Maintainer: webhookstudios <354619278+webhookstudios@users.noreply.github.com>
 Installed-Size: $(du -sk "$STAGE/usr" | cut -f1)
-Depends: python3, python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1 (>= 1.5), python3-markdown-it
-Recommends: python3-pygments
+Depends: python3, python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1 (>= 1.7), python3-markdown-it, gir1.2-gtksource-5, gir1.2-vte-3.91
+Recommends: python3-pygments, gir1.2-webkit-6.0
 Section: utils
 Priority: optional
 Homepage: https://github.com/webhookstudios/fleece
@@ -53,6 +53,10 @@ Description: A chat window for your local Ollama models
  Fleece is a desktop chat app for Ollama. It lists the models on your
  computer, streams answers as they are written, shows formatted text and
  code, keeps your chats, and can download new models for you.
+ .
+ Code mode adds a small code editor with a file tree, tabs, a terminal,
+ a Run button with live web preview, and an assistant that suggests
+ changes you review and apply.
  .
  Ollama itself is installed separately, from https://ollama.com/download.
 EOT

@@ -15,6 +15,12 @@ DEFAULTS = {
     'temperature': 0.7,
     'num_ctx': 8192,
     'show_thinking': True,
+    'mode': 'chat',
+    'code_model': '',
+    'last_project': '',
+    'recent_projects': [],
+    'projects': {},
+    'code_tip_shown': [],
 }
 
 

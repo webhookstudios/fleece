@@ -25,7 +25,10 @@ class FleeceApp(Adw.Application):
                              'Open the settings window', None)
         self.add_main_option('models', 0, GLib.OptionFlags.NONE, GLib.OptionArg.NONE,
                              'Open the window for downloading models', None)
+        self.add_main_option('code', 0, GLib.OptionFlags.NONE, GLib.OptionArg.FILENAME,
+                             'Open a folder in Code mode', 'FOLDER')
         self.open_settings = False
+        self.code_folder = None
         self.open_models = False
         self.connect('handle-local-options', self._on_options)
 
@@ -35,6 +38,11 @@ class FleeceApp(Adw.Application):
             self.prompt = value.get_string()
         self.open_settings = options.contains('settings')
         self.open_models = options.contains('models')
+        folder = options.lookup_value('code')
+        if folder:
+            import os
+            raw = bytes(folder.get_bytestring()).rstrip(b'\0').decode()
+            self.code_folder = os.path.abspath(os.path.expanduser(raw))
         return -1
 
     def do_startup(self):
@@ -60,6 +68,10 @@ class FleeceApp(Adw.Application):
     def do_activate(self):
         win = self.props.active_window
         if not win:
+            if self.code_folder:
+                config = Config()
+                config['last_project'] = self.code_folder
+                config['mode'] = 'code'
             win = FleeceWindow(self, Config(), ChatStore(), self.prompt, self.open_settings, self.open_models)
         win.present()
 

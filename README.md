@@ -14,7 +14,7 @@ Click **Code** at the top of the window and open a project folder.
 
 ![The assistant suggests a fix as a change card, beside the editor](docs/screenshots/code-fix.png)
 
-- **A simple editor** in the spirit of Sublime Text: tabs, line numbers, highlighting, a minimap, find and replace (<kbd>Ctrl</kbd>+<kbd>F</kbd>, <kbd>Ctrl</kbd>+<kbd>H</kbd>) and **Go to file** (<kbd>Ctrl</kbd>+<kbd>P</kbd>).
+- **A simple editor**: tabs, line numbers, highlighting, a minimap, find and replace (<kbd>Ctrl</kbd>+<kbd>F</kbd>, <kbd>Ctrl</kbd>+<kbd>H</kbd>) and **Go to file** (<kbd>Ctrl</kbd>+<kbd>P</kbd>).
 - **Ask about the open code.** The assistant sees the open file, or just the lines you selected. The chip above the message box shows what it can see; click it to leave the file out.
 - **Changes wait for you.** Suggested edits appear as cards with the removed lines in red and the new lines in green. Nothing changes until you click **Apply**, and <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes it. If the file changed since, the card says so instead of editing the wrong place.
 - **Right-click a selection** to explain it, find and fix bugs, add comments, clean it up or write tests.

@@ -866,7 +866,7 @@ class CodeWorkspace(Gtk.Box):
         current = settings.get('cwd') or ''
         folder_row.set_subtitle(GLib.markup_escape_text(current or "The file's own folder (automatic)"))
         pick = Gtk.Button(label='Choose…', valign=Gtk.Align.CENTER)
-        reset = Gtk.Button(icon_name='edit-undo-symbolic', valign=Gtk.Align.CENTER, tooltip_text='Back to automatic')
+        reset = Gtk.Button(icon_name='edit-undo-symbolic', valign=Gtk.Align.CENTER, tooltip_text='Reset to automatic')
         reset.add_css_class('flat')
         folder_row.add_suffix(reset)
         folder_row.add_suffix(pick)

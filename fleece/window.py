@@ -186,7 +186,7 @@ class FleeceWindow(Adw.ApplicationWindow):
         title = Gtk.Box(spacing=8)
         title.append(Gtk.Image(icon_name=APP_ID, pixel_size=20))
         name = Gtk.Label(label='Fleece')
-        name.add_css_class('heading')
+        name.add_css_class('sedge-display')
         title.append(name)
         header.set_title_widget(title)
         view.add_top_bar(header)

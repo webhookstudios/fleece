@@ -19,6 +19,8 @@ install -d "$SHARE/fleece" "$STAGE/DEBIAN" "$STAGE/usr/bin" \
     "$STAGE/usr/share/doc/fleece"
 
 install -m 644 "$ROOT"/fleece/*.py "$ROOT/fleece/style.css" "$SHARE/fleece/"
+cp -r "$ROOT/fleece/sedge" "$SHARE/fleece/"
+find "$SHARE/fleece/sedge" -type f -exec chmod 644 {} +
 install -m 755 "$ROOT/bin/fleece" "$STAGE/usr/bin/fleece"
 install -m 644 "$ROOT/data/$APP_ID.svg" "$STAGE/usr/share/icons/hicolor/scalable/apps/"
 sed -e 's|@EXEC@|fleece|' -e "s|@ICON@|$APP_ID|" "$ROOT/data/$APP_ID.desktop.in" \
@@ -35,6 +37,11 @@ Copyright: $(date +%Y) webhookstudios
 License: GPL-2+
  On Debian systems, the full text of the GNU General Public License
  version 2 can be found in /usr/share/common-licenses/GPL-2.
+
+Files: */sedge/fonts/*
+Copyright: 2023 The Young Serif Project Authors; 2015 The Public Sans Project Authors
+License: OFL-1.1
+ The full license texts are in the sedge/fonts/ folder.
 EOT
 chmod 644 "$STAGE/usr/share/doc/fleece/copyright"
 

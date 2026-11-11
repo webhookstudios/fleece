@@ -1,7 +1,4 @@
-@define-color accent_bg_color #c96442;
-@define-color accent_color #e08a63;
-@define-color accent_fg_color #ffffff;
-:root { --accent-bg-color: #c96442; --accent-color: #e08a63; --accent-fg-color: #ffffff; }
+/* Colors and fonts come from the Sedge kit (sedge/). */
 
 /* Sidebar */
 .sidebar-pane { background-color: alpha(@window_fg_color, 0.035); }
@@ -15,7 +12,7 @@
 .new-chat { border-radius: 12px; padding: 8px 12px; }
 
 /* Welcome */
-.greeting { font-size: 30px; font-weight: 600; }
+.greeting { font-family: "Young Serif", Georgia, serif; font-size: 32px; font-weight: normal; }
 .sub-greeting { font-size: 15px; opacity: 0.6; }
 .chip { border-radius: 999px; padding: 6px 14px; background: alpha(@window_fg_color, 0.06); }
 .chip:hover { background: alpha(@window_fg_color, 0.11); }

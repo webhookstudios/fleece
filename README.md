@@ -1,5 +1,7 @@
 # Fleece
 
+*Part of the Sedge family of webhookstudios apps.*
+
 A chat window and a small AI coding workspace for your local [Ollama](https://ollama.com) models. Pick a model, type, and get streamed answers in a clean desktop app, with no terminal needed. Switch to **Code** to edit a project with an assistant that suggests changes you review and apply. Built with GTK 4 and libadwaita, so it fits Ubuntu.
 
 ![The Fleece start screen](docs/screenshots/welcome.png)
@@ -55,10 +57,10 @@ You do not need any models yet: open **Get models** and download one from inside
 
 ### With the deb package (recommended)
 
-Download `fleece_1.1.0_all.deb` from the [latest release](https://github.com/webhookstudios/fleece/releases/latest), then:
+Download `fleece_1.2.0_all.deb` from the [latest release](https://github.com/webhookstudios/fleece/releases/latest), then:
 
 ```bash
-sudo apt install ./fleece_1.1.0_all.deb
+sudo apt install ./fleece_1.2.0_all.deb
 ```
 
 Open **Fleece** from the apps menu. To remove it:

@@ -47,13 +47,16 @@ class FleeceApp(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
+        from . import sedge
+        sedge.apply()
         provider = Gtk.CssProvider()
         provider.load_from_path(os.path.join(HERE, 'style.css'))
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider,
                                                   Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         icons = os.path.join(os.path.dirname(HERE), 'data', 'icons')
         if os.path.isdir(icons):
-            Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).add_search_path(icons)
+            theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
+            theme.set_search_path([icons, *theme.get_search_path()])
 
         about = Gio.SimpleAction.new('about', None)
         about.connect('activate', self._about)
@@ -79,7 +82,7 @@ class FleeceApp(Adw.Application):
         Adw.AboutDialog(application_name='Fleece', application_icon=APP_ID, version=__version__,
                         developer_name='webhookstudios', license_type=Gtk.License.GPL_2_0,
                         website='https://github.com/webhookstudios/fleece',
-                        comments='A chat window for your local Ollama models.').present(self.props.active_window)
+                        comments='A chat window for your local Ollama models.\n\nPart of the Sedge family of apps.').present(self.props.active_window)
 
 
 def main(argv):

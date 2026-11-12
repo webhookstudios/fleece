@@ -1,13 +1,11 @@
-# Fleece 1.2.0
+# Fleece 1.2.1
 
-Fleece keeps its name. It now has the Sedge look shared by every webhookstudios app: one set of colors, fonts and icons, in light and dark mode.
+A bigger app icon. Everything else works exactly as before.
 
-- New icon, colors and fonts. Window titles and headings use the Sedge serif.
-- Same name, new look: the Sedge colors, fonts and icon, with the greeting and header in the Sedge heading face.
-- Everything works exactly as before. Your settings and presets carry over.
+- The app icon is bigger, so it sits evenly with your other apps in the dock and the app grid.
 
 Install:
 
 ```bash
-sudo apt install ./fleece_1.2.0_all.deb
+sudo apt install ./fleece_1.2.1_all.deb
 ```

@@ -57,10 +57,10 @@ You do not need any models yet: open **Get models** and download one from inside
 
 ### With the deb package (recommended)
 
-Download `fleece_1.2.0_all.deb` from the [latest release](https://github.com/webhookstudios/fleece/releases/latest), then:
+Download `fleece_1.2.1_all.deb` from the [latest release](https://github.com/webhookstudios/fleece/releases/latest), then:
 
 ```bash
-sudo apt install ./fleece_1.2.0_all.deb
+sudo apt install ./fleece_1.2.1_all.deb
 ```
 
 Open **Fleece** from the apps menu. To remove it:

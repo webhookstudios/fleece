@@ -1,11 +1,11 @@
-# Fleece 1.2.1
+# Fleece 1.2.2
 
-A bigger app icon. Everything else works exactly as before.
+A new app icon. Everything else works exactly as before.
 
-- The app icon is bigger, so it sits evenly with your other apps in the dock and the app grid.
+- The app icon is redrawn in the new Sedge style: a teal tile with a light symbol, the same size as before in the dock and the app grid.
 
 Install:
 
 ```bash
-sudo apt install ./fleece_1.2.1_all.deb
+sudo apt install ./fleece_1.2.2_all.deb
 ```
